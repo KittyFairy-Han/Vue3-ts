@@ -1,18 +1,44 @@
+<!--
+ * @Author: 鱼小柔
+ * @Date: 2021-02-28 10:06:15
+ * @LastEditors: your name
+ * @LastEditTime: 2021-03-07 21:53:13
+ * @Description: 登录页
+-->
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
-  </div>
+  <main>
+    <home-create></home-create>
+    <column-list :list="list"></column-list>
+  </main>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
-
+import { computed, defineComponent, onMounted } from "vue";
+import ColumnList from "../components/ColumnList.vue";
+import { useStore } from "vuex";
+import { GlobalDataProps } from "../store";
+import HomeCreate from "@/components/HomeCreate.vue";
 export default defineComponent({
-  name: 'Home',
   components: {
-    HelloWorld,
+    ColumnList,
+    HomeCreate,
+  },
+  props: {},
+  setup() {
+    const store = useStore<GlobalDataProps>();
+    const columns = computed(() => store.state.columns);
+    console.log(columns.value);
+
+    onMounted(() => {
+      store.dispatch("fetchColumns");
+    });
+
+    return {
+      list: columns,
+    };
   },
 });
 </script>
+
+<style>
+</style>
