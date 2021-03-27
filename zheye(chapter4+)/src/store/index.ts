@@ -2,7 +2,7 @@
  * @Author: 鱼小柔
  * @Date: 2021-02-28 18:29:37
  * @LastEditors: your name
- * @LastEditTime: 2021-03-13 17:04:21
+ * @LastEditTime: 2021-03-21 23:06:19
  * @Description: file content
  */
 import { createStore } from "vuex";
@@ -42,7 +42,11 @@ export interface GlobalDataProps {
   error: { status: boolean; message?: string };
   token: string;
 }
-
+export interface ResponseType<P = {}> {
+  code: number;
+  msg: string;
+  data: P;
+}
 export default createStore<GlobalDataProps>({
   state: {
     columns: [],
@@ -53,16 +57,28 @@ export default createStore<GlobalDataProps>({
     error: { status: false },
   },
   mutations: {
-    fetchUserInfo(state, payload) {
+    setToken(state, { token }) {
+      state.token = token;
+    },
+    clearToken(state) {
+      state.token = "";
+    },
+    setUserInfo(state, payload) {
       state.user.isLogin = true;
       state.user.nickName = payload.nickName;
       state.user._id = payload._id;
       state.user.column = payload.column;
     },
+    clearUserInfo(state) {
+      state.user = {
+        isLogin: false,
+      };
+    },
     createPost(state, payload) {
+      debugger;
+      console.log(payload);
       state.posts.push({
         id: new Date().getTime(),
-        columnId: state.user.column,
         createdAt: new Date().toLocaleString(),
         ...payload,
       });
@@ -76,9 +92,7 @@ export default createStore<GlobalDataProps>({
     fetchPosts(state, data) {
       state.posts = data.list;
     },
-    fetchToken(state, { token }) {
-      state.token = token;
-    },
+
     setLoading(state, status) {
       state.loading = status;
     },
@@ -97,12 +111,21 @@ export default createStore<GlobalDataProps>({
       getAndCommit(`columns/${id}/posts`, "fetchPosts", context.commit);
     },
     async fetchToken(context, data) {
-      await postAndCommit(`user/login`, "fetchToken", context.commit, data);
-      updateToken(context.state.token);
-      localStorage.setItem("token", context.state.token);
+      await postAndCommit(`user/login`, "setToken", context.commit, data); //提交到store
+      updateToken(context.state.token); //添加到axios请求时候的header
+      localStorage.setItem("token", context.state.token); //保存到local
     },
     async fetchUserInfo(context) {
-      getAndCommit("user/current", "fetchUserInfo", context.commit);
+      getAndCommit("user/current", "setUserInfo", context.commit);
+    },
+    async createPost(context, payload) {
+      postAndCommit("posts", "createPost", context.commit, payload);
+    },
+    logout({ commit }) {
+      updateToken("");
+      localStorage.removeItem("token");
+      commit("clearUserInfo");
+      commit("clearToken");
     },
   },
   getters: {},

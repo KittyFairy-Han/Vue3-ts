@@ -2,7 +2,7 @@
  * @Author: 鱼小柔
  * @Date: 2021-03-07 22:33:06
  * @LastEditors: your name
- * @LastEditTime: 2021-03-16 22:33:58
+ * @LastEditTime: 2021-03-21 19:16:32
  * @Description: loader
 -->
 <template>
@@ -13,7 +13,7 @@
     >
       <div class="loading-content">
         <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">{{ text || loading }}</span>
+          <!-- <span class="sr-only">{{ text || loading }}</span> -->
         </div>
         <p v-if="text" class="text-primary small">{{ text }}</p>
       </div>

@@ -45,9 +45,9 @@ export default defineComponent({
     const store = useStore<GlobalDataProps>();
     const columnId = route.params.id;
     const column = computed(() => store.state.columns[0]);
-    console.log(column);
+    // console.log(column);
     const list = computed(() => store.state.posts);
-    console.log(list);
+    // console.log(list);
     onMounted(() => {
       store.dispatch("fetchColumn", columnId);
       store.dispatch("fetchPosts", columnId);
